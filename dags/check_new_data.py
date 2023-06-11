@@ -1,8 +1,6 @@
+import os
 import logging
-import shutil
-import time
 from datetime import datetime
-from pprint import pprint
 
 from airflow import DAG
 from airflow.decorators import task
@@ -79,8 +77,10 @@ def check_new_data():
     meta = None
 
     contents = s3.list_objects(Bucket=BUCKET_NAME)
-    if 'Contents' in contents.keys():
-        for key in contents['Contents']:
+    paginator = s3.get_paginator('list_objects_v2')
+    pages = paginator.paginate(Bucket=BUCKET_NAME)
+    for page in pages:
+        for key in page['Contents']:
             if key['Key'].split('/')[0] == IMITATION_PREFIX:
                 flowers_imitation_objs.append(key['Key'])
             elif key['Key'].split('/')[0] == PHOTO_PREFIX:
