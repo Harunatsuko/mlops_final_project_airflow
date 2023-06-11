@@ -1,8 +1,6 @@
 import logging
-import shutil
-import time
 from datetime import datetime
-from pprint import pprint
+import requests
 
 from airflow import DAG
 from airflow.decorators import task
