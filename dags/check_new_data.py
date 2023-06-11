@@ -50,10 +50,11 @@ def new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs):
     flowers_imitation_objs_meta = meta[meta['label'] == IMITATION_PREFIX]['name'].values
     flowers_photo_objs_meta = meta[meta['label'] == PHOTO_PREFIX]['name'].values
 
-    flowers_imitation_new = list(set(flowers_imitation_objs).diff(flowers_imitation_objs_meta))
-    flowers_photo_new = list(set(flowers_photo_objs).diff(flowers_photo_objs_meta))
+    flowers_imitation_new = list(set(flowers_imitation_objs).difference(flowers_imitation_objs_meta))
+    flowers_photo_new = list(set(flowers_photo_objs).difference(flowers_photo_objs_meta))
     if len(flowers_imitation_new) or len(flowers_photo_new):
         new_objs = flowers_imitation_new + flowers_photo_new
+    log.info('Len of new_objs {}'.format(len(new_objs)))
     return new_objs
 
 def check_new_data():
