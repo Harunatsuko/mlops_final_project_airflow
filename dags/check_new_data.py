@@ -65,7 +65,7 @@ def check_new_data():
     PHOTO_PREFIX = Variable.get('PHOTO_PREFIX')
 
     S3_ID = Variable.get('S3_ID')
-    S3_KEY = Variable.get('S3_KEY')
+    S3_KEY = Variable.get('SECRET_S3_KEY')
 
     session = boto3.session.Session()
     s3 = session.client(service_name='s3',

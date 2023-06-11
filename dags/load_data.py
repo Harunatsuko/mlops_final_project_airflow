@@ -2,6 +2,7 @@ import logging
 import jwt
 from datetime import datetime
 import requests
+import json
 
 from airflow import DAG
 from airflow.decorators import task
