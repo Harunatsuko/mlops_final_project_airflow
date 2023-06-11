@@ -95,7 +95,12 @@ def check_new_data():
         return new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs)
     else:
         create_meta_file(s3, flowers_imitation_objs, flowers_photo_objs)
-        return flowers_imitation_objs+flowers_photo_objs
+
+    new_objs = flowers_imitation_objs+flowers_photo_objs
+    if len(new_objs):
+        with open(os.path.join(DATA_FOLDER, 'tmp.txt'), 'w') as f:
+            for obj in new_objs:
+                f.write(f"{obj}\n")
 
 check_new_objs = PythonOperator(task_id='check_new_data', python_callable=check_new_data, dag=dag)
 

@@ -51,7 +51,7 @@ def gen_token():
 def get_vm_ip_address():
     INSTANCE_ID = Variable.get('INSTANCE_ID')
 
-    wt_token = gen_token()
+    jwt_token = gen_token()
     IAM_TOKEN = requests.post(iam_token_url,
                             json={"jwt":jwt_token.decode('ascii')},
                             headers = {'Content-Type':'application/json'})
@@ -60,13 +60,17 @@ def get_vm_ip_address():
     url = 'https://compute.api.cloud.yandex.net/compute/v1/instances/{}'.format(INSTANCE_ID)
     res = requests.get(url, headers = {'Authorization': 'Bearer {}'.format(iam_token)})
     print(res)
-    ip_addr = res['networkInterfaces']['primaryV4Address']['address']
+    ip_addr = res.json()['networkInterfaces'][0]['primaryV4Address']['address']
     return ip_addr
 
 def load_data_on_server(**kwargs):
-    ti = kwargs['ti']
-    new_objs = ti.xcom_pull(task_ids='check_new_data')
-    print(new_objs)
+    DATA_FOLDER = Variable.get('DATA_FOLDER')
+    new_objs = []
+    new_objs_file = os.path.join(DATA_FOLDER, 'tmp.txt')
+    if os.path.exists(new_objs_file):
+        with open(new_objs_file, 'r') as f:
+            for obj in f:
+                new_objs.append(obj.rstrip())
     ip_addr = get_vm_ip_address()
 
     url = 'http://{}:8002/load_data'.format(ip_addr)
