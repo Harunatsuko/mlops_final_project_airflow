@@ -7,7 +7,7 @@ from pprint import pprint
 from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.python_operator import PythonOperator
-
+from airflow.models import Variable
 import pandas as pd
 import boto3
 
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 dag = DAG(
     dag_id='check_new_data',
-    schedule_interval='* */5 * * *',
+    schedule_interval='* * * * *',
     start_date=datetime.now(),
     tags=['final_project'],
 )
@@ -62,9 +62,14 @@ def check_new_data():
     IMITATION_PREFIX = Variable.get('IMITATION_PREFIX')
     PHOTO_PREFIX = Variable.get('PHOTO_PREFIX')
 
+    S3_ID = Variable.get('S3_ID')
+    S3_KEY = Variable.get('S3_KEY')
+
     session = boto3.session.Session()
     s3 = session.client(service_name='s3',
-                        endpoint_url='https://storage.yandexcloud.net')
+                        endpoint_url='https://storage.yandexcloud.net',
+                        aws_access_key_id= S3_ID,
+                        aws_secret_access_key= S3_KEY)
 
     flowers_imitation_objs = []
     flowers_photo_objs = []
