@@ -23,6 +23,7 @@ dag = DAG(
 def create_meta_file(s3, flowers_imitation_objs, flowers_photo_objs):
     BUCKET_NAME = Variable.get('BUCKET_NAME')
     DATASET_META_FILE = Variable.get('DATASET_META_FILE')
+    DATA_FOLDER = Variable.get('DATA_FOLDER')
     IMITATION_PREFIX = Variable.get('IMITATION_PREFIX')
     PHOTO_PREFIX = Variable.get('PHOTO_PREFIX')
 
@@ -36,9 +37,10 @@ def create_meta_file(s3, flowers_imitation_objs, flowers_photo_objs):
     meta['datetime'] = datetime.now()
     meta['version'] = 0
 
-    meta.to_csv(DATASET_META_FILE, index==False)
+    meta_filename = os.path.join(DATA_FOLDER, DATASET_META_FILE)
+    meta.to_csv(meta_filename, index=False)
 
-    s3.upload_file(Filename=DATASET_META_FILE,
+    s3.upload_file(Filename=meta_filename,
                     Bucket=BUCKET_NAME,
                     Key=DATASET_META_FILE)
 
@@ -59,6 +61,7 @@ def new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs):
 def check_new_data():
     BUCKET_NAME = Variable.get('BUCKET_NAME')
     DATASET_META_FILE = Variable.get('DATASET_META_FILE')
+    DATA_FOLDER = Variable.get('DATA_FOLDER')
     IMITATION_PREFIX = Variable.get('IMITATION_PREFIX')
     PHOTO_PREFIX = Variable.get('PHOTO_PREFIX')
 
@@ -84,8 +87,9 @@ def check_new_data():
                 flowers_photo_objs.append(key['Key'])
             else:
                 if key['Key'] == DATASET_META_FILE:
-                    s3.download_file(BUCKET_NAME, DATASET_META_FILE, DATASET_META_FILE)
-                    meta = pd.read_csv(DATASET_META_FILE)
+                    meta_filename = os.path.join(DATA_FOLDER, DATASET_META_FILE)
+                    s3.download_file(BUCKET_NAME, DATASET_META_FILE, meta_filename)
+                    meta = pd.read_csv(meta_filename)
     if meta is not None:
         return new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs)
     else:
