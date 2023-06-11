@@ -92,7 +92,11 @@ def check_new_data():
                     s3.download_file(BUCKET_NAME, DATASET_META_FILE, meta_filename)
                     meta = pd.read_csv(meta_filename)
     if meta is not None:
-        return new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs)
+        new_objs = new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs)
+        if len(new_objs):
+            with open(os.path.join(DATA_FOLDER, 'tmp.txt'), 'w') as f:
+                for obj in new_objs:
+                    f.write(f"{obj}\n")
     else:
         create_meta_file(s3, flowers_imitation_objs, flowers_photo_objs)
 
