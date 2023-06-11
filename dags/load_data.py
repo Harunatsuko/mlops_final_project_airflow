@@ -3,6 +3,7 @@ import jwt
 from datetime import datetime
 import requests
 import json
+import time
 
 from airflow import DAG
 from airflow.decorators import task
@@ -20,6 +21,8 @@ dag = DAG(
     start_date=datetime.now(),
     tags=['final_project'],
 )
+
+iam_token_url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens'
 
 def gen_token():
     service_account_id = Variable.get('SERV_ACC_ID')
