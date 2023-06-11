@@ -1,18 +1,15 @@
 import logging
 from datetime import datetime
 
+import time
+import jwt
+
 from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 
 log = logging.getLogger(__name__)
-
-INSTANCE_ID = Variable.get('INSTANCE_ID')
-url = 'https://compute.api.cloud.yandex.net/compute/v1/instances/{}:start'.format(INSTANCE_ID)
-cmd1 = 'export IAM_TOKEN=`yc iam create-token`'
-cmd2 = 'curl -X POST -H "Authorization: Bearer ${IAM_TOKEN}" '
-cmd3 = 'export IAM_TOKEN=""'
 
 dag = DAG(
     dag_id='wake_up_vm',
@@ -21,12 +18,48 @@ dag = DAG(
     tags=['final_project'],
 )
 
-wake_up_vm = BashOperator(
-    task_id='wake_up_vm',
-    bash_command=cmd1 + ' && ' + cmd2 + url + ' && ' + cmd3,
-    dag=dag,
-    run_as_user='finalproject'
-)
+INSTANCE_ID = Variable.get('INSTANCE_ID')
+start_url = 'https://compute.api.cloud.yandex.net/compute/v1/instances/{}:start'.format(INSTANCE_ID)
+iam_token_url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens'
+
+def gen_token():
+    service_account_id = Variable.get('SERV_ACC_ID')
+    key_id = Variable.get('SERV_ACC_PUB_KEY_ID')
+    secret_filepath = Variable.get('SECRET_FILEPATH')
+
+    with open(secret_filepath, 'r') as private:
+        private_key = json.load(private) # Чтение закрытого ключа из файла.
+        private_key = private_key['private_key']
+
+    now = int(time.time())
+    payload = {
+            'aud': 'https://iam.api.cloud.yandex.net/iam/v1/tokens',
+            'iss': service_account_id,
+            'iat': now,
+            'exp': now + 360}
+
+    encoded_token = jwt.encode(
+        payload,
+        private_key,
+        algorithm='PS256',
+        headers={'kid': key_id})
+
+    return encoded_token
+
+
+def wake_up_vm():
+    jwt_token = gen_token()
+    IAM_TOKEN = requests.post(iam_token_url,
+                            json={"jwt":jwt_token.decode('ascii')},
+                            headers = {'Content-Type':'application/json'})
+    iam_token = IAM_TOKEN.json()['iamToken']
+    wake_up = requests.post(start_url,
+                            headers = {'Authorization': 'Bearer {}'.format(iam_token)})
+    log.info(wake_up.text)
+
+wake_up = PythonOperator(task_id='wake_up_vm',
+                        python_callable=wake_up_vm,
+                        dag=dag)
 
 print('Wake up vm with gpu')
-wake_up_vm
+wake_up
