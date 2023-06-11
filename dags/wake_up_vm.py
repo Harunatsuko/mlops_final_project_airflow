@@ -23,8 +23,9 @@ dag = DAG(
 
 wake_up_vm = BashOperator(
     task_id='wake_up_vm',
-    bash_command=cmd1 + ' && ' + cmd2 + urls + ' && ' + cmd3,
-    dag=dag
+    bash_command=cmd1 + ' && ' + cmd2 + url + ' && ' + cmd3,
+    dag=dag,
+    run_as_user='finalproject'
 )
 
 print('Wake up vm with gpu')
