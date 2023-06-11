@@ -7,6 +7,7 @@ from pprint import pprint
 from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.python_operator import PythonOperator
+from airflow.models import Variable
 
 import pandas as pd
 import boto3

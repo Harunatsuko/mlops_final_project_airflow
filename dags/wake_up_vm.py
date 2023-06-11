@@ -6,7 +6,7 @@ import jwt
 
 from airflow import DAG
 from airflow.decorators import task
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
 log = logging.getLogger(__name__)
