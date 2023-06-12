@@ -50,4 +50,4 @@ train = PythonOperator(task_id='train_model',
                             python_callable=train_model,
                             dag=dag)
 
-check_new_objs >> branch_op >> wake_up_vm >> load_data >> train_model
+check_new_objs >> branch_op >> wake_up >> load_data >> train
