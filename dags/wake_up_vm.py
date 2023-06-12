@@ -11,7 +11,7 @@ from airflow.decorators import task
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
-from instance_utils import gen_token
+from instance_utils import gen_token, iam_token_url
 
 log = logging.getLogger(__name__)
 
