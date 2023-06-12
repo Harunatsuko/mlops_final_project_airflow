@@ -13,12 +13,12 @@ from airflow.models import Variable
 
 log = logging.getLogger(__name__)
 
-dag = DAG(
-    dag_id='wake_up_vm',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
-    tags=['final_project'],
-)
+# dag = DAG(
+#     dag_id='wake_up_vm',
+#     schedule_interval='* * * * *',
+#     start_date=datetime.now(),
+#     tags=['final_project'],
+# )
 
 INSTANCE_ID = Variable.get('INSTANCE_ID')
 start_url = 'https://compute.api.cloud.yandex.net/compute/v1/instances/{}:start'.format(INSTANCE_ID)
@@ -58,10 +58,6 @@ def wake_up_vm():
     wake_up = requests.post(start_url,
                             headers = {'Authorization': 'Bearer {}'.format(iam_token)})
     log.info(wake_up.text)
-
-wake_up = PythonOperator(task_id='wake_up_vm',
-                        python_callable=wake_up_vm,
-                        dag=dag)
 
 # print('Wake up vm with gpu')
 # wake_up

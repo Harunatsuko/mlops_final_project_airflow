@@ -16,12 +16,12 @@ import boto3
 
 log = logging.getLogger(__name__)
 
-dag = DAG(
-    dag_id='load_data',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
-    tags=['final_project'],
-)
+# dag = DAG(
+#     dag_id='load_data',
+#     schedule_interval='* * * * *',
+#     start_date=datetime.now(),
+#     tags=['final_project'],
+# )
 
 iam_token_url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens'
 
@@ -76,10 +76,6 @@ def load_data_on_server(**kwargs):
 
     url = 'http://{}:8002/load_data'.format(ip_addr)
     res = requests.post(url, json={'objects_list': new_objs})
-
-load_data = PythonOperator(task_id='load_data_on_server',
-                            python_callable=load_data_on_server,
-                            dag=dag)
 
 # print('Load new data')
 # load_data

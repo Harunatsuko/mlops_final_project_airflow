@@ -11,12 +11,12 @@ import boto3
 
 log = logging.getLogger(__name__)
 
-dag = DAG(
-    dag_id='check_new_data',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
-    tags=['final_project'],
-)
+# dag = DAG(
+#     dag_id='check_new_data',
+#     schedule_interval='* * * * *',
+#     start_date=datetime.now(),
+#     tags=['final_project'],
+# )
 
 def create_meta_file(s3, flowers_imitation_objs, flowers_photo_objs):
     BUCKET_NAME = Variable.get('BUCKET_NAME')
@@ -106,8 +106,5 @@ def check_new_data():
         if os.path.exists(tmp_filepath):
             os.remove(tmp_filepath)
     
-
-check_new_objs = PythonOperator(task_id='check_new_data', python_callable=check_new_data, dag=dag)
-
 # print('Check new data')
 # check_new_objs

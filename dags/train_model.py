@@ -15,12 +15,12 @@ import boto3
 
 log = logging.getLogger(__name__)
 
-dag = DAG(
-    dag_id='train_model',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
-    tags=['final_project'],
-)
+# dag = DAG(
+#     dag_id='train_model',
+#     schedule_interval='* * * * *',
+#     start_date=datetime.now(),
+#     tags=['final_project'],
+# )
 
 iam_token_url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens'
 
@@ -71,10 +71,6 @@ def train_model(**kwargs):
 
     url = 'http://{}:8002/train_model/{}'.format(ip_addr, num_epochs)
     res = requests.get(url)
-
-train = PythonOperator(task_id='train_model',
-                            python_callable=train_model,
-                            dag=dag)
 
 # print('Train model')
 # train
