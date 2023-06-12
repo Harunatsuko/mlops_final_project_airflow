@@ -11,6 +11,8 @@ from airflow.decorators import task
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
+from instance_utils import gen_token
+
 log = logging.getLogger(__name__)
 
 # dag = DAG(
@@ -22,32 +24,6 @@ log = logging.getLogger(__name__)
 
 INSTANCE_ID = Variable.get('INSTANCE_ID')
 start_url = 'https://compute.api.cloud.yandex.net/compute/v1/instances/{}:start'.format(INSTANCE_ID)
-iam_token_url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens'
-
-def gen_token():
-    service_account_id = Variable.get('SERV_ACC_ID')
-    key_id = Variable.get('SERV_ACC_PUB_KEY_ID')
-    secret_filepath = Variable.get('SECRET_FILEPATH')
-
-    with open(secret_filepath, 'r') as private:
-        private_key = json.load(private) # Чтение закрытого ключа из файла.
-        private_key = private_key['private_key']
-
-    now = int(time.time())
-    payload = {
-            'aud': 'https://iam.api.cloud.yandex.net/iam/v1/tokens',
-            'iss': service_account_id,
-            'iat': now,
-            'exp': now + 360}
-
-    encoded_token = jwt.encode(
-        payload,
-        private_key,
-        algorithm='PS256',
-        headers={'kid': key_id})
-
-    return encoded_token
-
 
 def wake_up_vm():
     jwt_token = gen_token()
