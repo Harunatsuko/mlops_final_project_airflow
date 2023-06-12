@@ -8,6 +8,7 @@ from airflow.models import Variable
 from airflow.operators.branch import BaseBranchOperator
 
 from load_weights import load_weights
+from update_meta_file import update_meta_file
 
 log = logging.getLogger(__name__)
 
