@@ -12,12 +12,12 @@ import boto3
 
 log = logging.getLogger(__name__)
 
-dag = DAG(
-    dag_id='load_weights',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
-    tags=['final_project'],
-)
+# dag = DAG(
+#     dag_id='load_weights',
+#     schedule_interval='* * * * *',
+#     start_date=datetime.now(),
+#     tags=['final_project'],
+# )
 
 def get_vm_ip_address():
     INSTANCE_ID = Variable.get('INSTANCE_ID')
@@ -32,10 +32,9 @@ def load_weights(**kwargs):
 
     url = 'http://{}:8002/save_model/'.format(ip_addr)
     res = requests.get(url)
-
-upload_weights = PythonOperator(task_id='load_weights',
-                                python_callable=load_weights,
-                                dag=dag)
+    if res.status_code == 200:
+        return res.json()['is_new']
+    return False
 
 # print('Upload new weights to s3')
 # upload_weights

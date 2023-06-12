@@ -11,12 +11,12 @@ import boto3
 
 log = logging.getLogger(__name__)
 
-dag = DAG(
-    dag_id='update_meta_file',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
-    tags=['final_project'],
-)
+# dag = DAG(
+#     dag_id='update_meta_file',
+#     schedule_interval='* * * * *',
+#     start_date=datetime.now(),
+#     tags=['final_project'],
+# )
 
 def update_meta_file(**kwargs):
     BUCKET_NAME = Variable.get('BUCKET_NAME')
@@ -66,8 +66,6 @@ def update_meta_file(**kwargs):
     s3.upload_file(Filename=meta_filename,
                     Bucket=BUCKET_NAME,
                     Key=DATASET_META_FILE)
-
-update_meta = PythonOperator(task_id='update_meta_file', python_callable=update_meta_file, dag=dag)
 
 # print('Update meta file with new objects info')
 # update_meta
