@@ -5,6 +5,7 @@ from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
+from airflow.operators.branch import BaseBranchOperator
 
 from check_new_data import check_new_data
 from wake_up_vm import wake_up_vm
@@ -13,6 +14,15 @@ from train_model import train_model
 
 log = logging.getLogger(__name__)
 
+class MyBranchOperator(BaseBranchOperator):
+    def choose_branch(self, context):
+        DATA_FOLDER = Variable.get('DATA_FOLDER')
+        tmp_filepath = os.path.join(DATA_FOLDER, 'tmp.txt')
+        if os.path.exists(tmp_filepath):
+            return 'wake_up_vm'
+        else:
+            return None
+
 dag = DAG(
     dag_id='final_project_dag_step1',
     schedule_interval='* * * * *',
@@ -20,16 +30,8 @@ dag = DAG(
     tags=['final_project'],
 )
 
-@task.branch(task_id='branch_task')
-def branch_func():
-    DATA_FOLDER = Variable.get('DATA_FOLDER')
-    tmp_filepath = os.path.join(DATA_FOLDER, 'tmp.txt')
-    if os.path.exists(tmp_filepath):
-        return 'wake_up_vm'
-    else:
-        return None
-
-branch_op = branch_func()
+branch_op = MyBranchOperator(task_id='branch',
+                            dag=dag)
 
 wake_up = PythonOperator(task_id='wake_up_vm',
                         python_callable=wake_up_vm,
