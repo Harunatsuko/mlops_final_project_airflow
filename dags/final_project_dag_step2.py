@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.decorators import task
@@ -22,8 +22,8 @@ class WeightsBranchOperator(BaseBranchOperator):
 
 dag = DAG(
     dag_id='final_project_dag_step2',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
+    schedule_interval=timedelta(weeks=1),
+    start_date=datetime(2023, 6, 14, 2, 5, 0),
     tags=['final_project'],
 )
 

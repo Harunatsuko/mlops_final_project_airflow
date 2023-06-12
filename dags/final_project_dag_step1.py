@@ -1,6 +1,6 @@
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.decorators import task
@@ -22,12 +22,12 @@ class MyBranchOperator(BaseBranchOperator):
         if os.path.exists(tmp_filepath):
             return 'wake_up_vm'
         else:
-            return None
+            return []
 
 dag = DAG(
     dag_id='final_project_dag_step1',
-    schedule_interval='* * * * *',
-    start_date=datetime.now(),
+    schedule_interval=timedelta(weeks=1),
+    start_date=datetime(2023, 6, 13, 3, 5, 0),
     tags=['final_project'],
 )
 

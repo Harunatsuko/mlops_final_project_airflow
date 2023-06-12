@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import datetime
 
@@ -61,7 +62,7 @@ def update_meta_file(**kwargs):
     meta_new['version'] = version + 1
     meta = pd.concat([meta, meta_new])
 
-    meta.to_csv(meta_filename, index==False)
+    meta.to_csv(meta_filename, index=False)
 
     s3.upload_file(Filename=meta_filename,
                     Bucket=BUCKET_NAME,
