@@ -1,6 +1,9 @@
 import logging
 from datetime import datetime
 import requests
+import json
+import time
+import jwt
 
 from airflow import DAG
 from airflow.decorators import task
@@ -73,5 +76,5 @@ train = PythonOperator(task_id='train_model',
                             python_callable=train_model,
                             dag=dag)
 
-print('Train model')
-train
+# print('Train model')
+# train

@@ -37,5 +37,5 @@ upload_weights = PythonOperator(task_id='load_weights',
                                 python_callable=load_weights,
                                 dag=dag)
 
-print('Upload new weights to s3')
-upload_weights
+# print('Upload new weights to s3')
+# upload_weights

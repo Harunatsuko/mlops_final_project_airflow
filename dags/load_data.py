@@ -81,5 +81,5 @@ load_data = PythonOperator(task_id='load_data_on_server',
                             python_callable=load_data_on_server,
                             dag=dag)
 
-print('Load new data')
-load_data
+# print('Load new data')
+# load_data

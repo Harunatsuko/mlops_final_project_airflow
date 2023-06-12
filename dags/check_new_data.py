@@ -93,20 +93,21 @@ def check_new_data():
                     meta = pd.read_csv(meta_filename)
     if meta is not None:
         new_objs = new_obj_list(meta, flowers_imitation_objs, flowers_photo_objs)
-        if len(new_objs):
-            with open(os.path.join(DATA_FOLDER, 'tmp.txt'), 'w') as f:
-                for obj in new_objs:
-                    f.write(f"{obj}\n")
     else:
         create_meta_file(s3, flowers_imitation_objs, flowers_photo_objs)
+        new_objs = flowers_imitation_objs+flowers_photo_objs
 
-    new_objs = flowers_imitation_objs+flowers_photo_objs
+    tmp_filepath = os.path.join(DATA_FOLDER, 'tmp.txt')
     if len(new_objs):
-        with open(os.path.join(DATA_FOLDER, 'tmp.txt'), 'w') as f:
+        with open(tmp_filepath, 'w') as f:
             for obj in new_objs:
                 f.write(f"{obj}\n")
+    else:
+        if os.path.exists(tmp_filepath):
+            os.remove(tmp_filepath)
+    
 
 check_new_objs = PythonOperator(task_id='check_new_data', python_callable=check_new_data, dag=dag)
 
-print('Check new data')
-check_new_objs
+# print('Check new data')
+# check_new_objs

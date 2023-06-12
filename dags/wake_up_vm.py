@@ -63,5 +63,5 @@ wake_up = PythonOperator(task_id='wake_up_vm',
                         python_callable=wake_up_vm,
                         dag=dag)
 
-print('Wake up vm with gpu')
-wake_up
+# print('Wake up vm with gpu')
+# wake_up
